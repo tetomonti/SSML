@@ -1,0 +1,58 @@
+---
+title: "Random Forest"
+author: "Rebecca Panitch"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Random Forest}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+```{r}
+library(Biobase)
+library(randomForest)
+library(pROC)
+```
+
+```{r}
+##load data
+tcga <- readRDS("/projectnb/cp2018ssml/datasets/tcga/BRCA_2018_11_01_subtyped_DESeq2_log_eSet.rds")
+head(tcga)
+#take only pheno data
+ph <- phenoData(tcga)
+pheno <- ph[ph$pam50=="LumB" | ph$pam50=="LumA",]
+##create a binary variable for pam50 (0 = LumA, 1 = LumB)
+pheno$pam50_binary <- as.factor(as.numeric(pheno$pam50=="LumB"))
+
+## 70% of the sample size (70% training, 30%test )
+smp_size <- floor(0.70 * nrow(pheno))
+
+set.seed(123)
+train_tcga <- sample(seq_len(nrow(pheno)), size = smp_size)
+
+##split the phenotype data by test and training
+train_pheno <- pheno[train_tcga, ]
+test_pheno <- pheno[-train_tcga, ]
+
+#split expression data by phenotype split
+train_exp <- t(exprs(tcga)[,rownames(train_pheno)])
+test_exp <- t(exprs(tcga)[,rownames(test_pheno)])
+
+library(randomForest)
+model <- randomForest(x=train_exp, y=train_pheno$pam50_binary)
+save(model, file='/projectnb/cp2018ssml/workdir/rebecca/rf_model_lumAlumB_TCGA_supervised.rda')
+pred <- predict(model, newdata = test_exp)
+
+library(pROC)
+roc <- roc(as.numeric(as.character(test_pheno$pam50_binary)), as.numeric(as.character(pred)))
+pdf("/projectnb/cp2018ssml/workdir/rebecca/ROC_LumALumB_TCGA_supervised.pdf")
+plot(roc, main="ROC Plot for LumA vs LumB Supervised Prediction in TCGA")
+text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc)))
+dev.off()
+```
+
