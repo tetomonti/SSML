@@ -1,15 +1,21 @@
 ---
 title: "SSML"
 author:
+- name: Ethel Nankya
+  affiliation:
+  - &1 Bioinformatics Graduate Program, Boston University, Boston, MA
+- name: Rebecca Panitch
+  affiliation:
+  - *1
 - name: Lucas Schiffer
+  affiliation:
+  - *1
 date: '`r format(Sys.Date(), "%B %e, %Y")`'
 abstract: >
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis tempor massa
-    eu ipsum interdum, ut tincidunt mauris efficitur. Maecenas placerat pulvinar
-    egestas. Maecenas facilisis interdum aliquam. Phasellus sit amet pharetra
-    eros, vel ullamcorper sapien. Curabitur cursus orci justo, ultrices rhoncus
-    magna tincidunt eu. Mauris nec gravida orci. Nulla ac enim quam. Maecenas
-    eros risus, varius nec nisi ac, varius ultricies massa.
+    SSML aims to impliment semi-supervised machine learning methods for
+    Bioconductor SummarizedExperiment class objects to predict labels of
+    carcinogenicity. However, we will write our methods to be sufficiently
+    general so as to apply to additional problems.
 package: SSML
 output:
     BiocStyle::html_document
@@ -31,7 +37,8 @@ knitr::opts_chunk$set(message = FALSE)
 ```
 
 The following packages will be used in this vignette to provide demonstrative
-examples of what a user might do with ...
+examples of what a user might do with
+`r BiocStyle::Githubpkg("schifferl/SSML")`.
 
 ```{r}
 library(SSML)
@@ -42,3 +49,83 @@ this vignette to provide the most elegant and concise syntax. See the
 `r BiocStyle::CRANpkg("magrittr")` vignette if the syntax is unclear.
 
 # Introduction
+
+The `r BiocStyle::Githubpkg("schifferl/SSML")` package contains a single toy
+data set, `TCGA`, created from the `r BiocStyle::Biocpkg("curatedTCGAData")`
+package. It is provided as a Bioconductor `SummarizedExperiment` object (see the
+`r BiocStyle::Biocpkg("SummarizedExperiment")` vignette for further details) as
+shown below.
+
+```{r}
+TCGA
+```
+
+The toy data set is necessary as it represents the input format we are designing
+our methods around, the Bioconductor `SummarizedExperiment` object. In the
+future, further data sets from the
+[Carcinogenome Project](https://carcinogenome.org/),
+[DrugMatrix/ToxFX](https://ntp.niehs.nih.gov/results/toxfx/index.html), and
+[TG-GATEs](https://toxico.nibiohn.go.jp/english/) will be added. These later
+additions will be used to evaluate method performance and thus we will not need
+them immediately – not to mention the work necessary to coerce them to
+`SummarizedExperiment` objects.
+
+# Framework
+
+We hope to address cross-validation problems in biology generally and take the
+view that a framework is the best way to do so. Given a `SummarizedExperiment`
+object, we will predict label through a series of procedural steps by first
+provisioning training/test sets in a standard way. Then by wrapping existing
+machine learning methods to accept the output of the provisioning step. Finally,
+we will evaluate method performance through the use of ROC curves and AUC
+calculations. All output from machine learning methods we wrap will be
+standardized such that evaluation can be implimented as a general purpose
+method.
+
+# Provisioning
+
+The following method represents our current work on provisioning.
+
+```{r}
+provision_sets <- function(x, ...) {
+    
+}
+```
+
+# Wrapping
+
+## Random Forest
+
+The following method represents our current work on wrapping random forest.
+
+```{r}
+random_forest <- function(x, ...) {
+    
+}
+```
+
+# Evaluation
+
+The following method represents our current work on evaluation.
+
+```{r}
+evaluate_performance <- function(x, ...) {
+    
+}
+```
+
+# Examples
+
+## Random Forests
+
+```{r}
+provision_sets(TCGA) %>%
+    random_forest() %>%
+    evaluate_performance()
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```

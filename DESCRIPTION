@@ -20,7 +20,7 @@ Depends:
     R (>= 3.5.0),
     SummarizedExperiment
 Imports:
-    Biobase
+    magrittr
 Suggests:
     BiocCheck,
     BiocStyle,
