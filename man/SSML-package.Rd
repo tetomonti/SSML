@@ -4,13 +4,11 @@
 \name{SSML-package}
 \alias{SSML}
 \alias{SSML-package}
-\title{SSML: What the Package Does (One Line, Title Case)}
+\title{SSML: Semi-Supervised Machine Learning Methods for Bioconductor}
 \description{
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis tempor massa
-    eu ipsum interdum, ut tincidunt mauris efficitur. Maecenas placerat pulvinar
-    egestas. Maecenas facilisis interdum aliquam. Phasellus sit amet pharetra
-    eros, vel ullamcorper sapien. Curabitur cursus orci justo, ultrices rhoncus
-    magna tincidunt eu. Mauris nec gravida orci. Nulla ac enim quam. Maecenas
-    eros risus, varius nec nisi ac, varius ultricies massa.
+SSML aims to impliment semi-supervised machine learning methods for
+    Bioconductor SummarizedExperiment class objects to predict labels of
+    carcinogenicity. However, we will write our methods to be sufficiently
+    general so as to apply to additional problems.
 }
 \keyword{internal}
