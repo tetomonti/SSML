@@ -1,0 +1,44 @@
+---
+title: "SSML"
+author:
+- name: Lucas Schiffer
+date: '`r format(Sys.Date(), "%B %e, %Y")`'
+abstract: >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis tempor massa
+    eu ipsum interdum, ut tincidunt mauris efficitur. Maecenas placerat pulvinar
+    egestas. Maecenas facilisis interdum aliquam. Phasellus sit amet pharetra
+    eros, vel ullamcorper sapien. Curabitur cursus orci justo, ultrices rhoncus
+    magna tincidunt eu. Mauris nec gravida orci. Nulla ac enim quam. Maecenas
+    eros risus, varius nec nisi ac, varius ultricies massa.
+package: SSML
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{SSML}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+---
+
+# Prerequisites
+
+The following `r BiocStyle::CRANpkg("knitr")` options will be used in this
+vignette to provide the most useful and concise output.
+
+```{r}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+The following packages will be used in this vignette to provide demonstrative
+examples of what a user might do with ...
+
+```{r}
+library(SSML)
+```
+
+Pipe operators from the `r BiocStyle::CRANpkg("magrittr")` package are used in
+this vignette to provide the most elegant and concise syntax. See the
+`r BiocStyle::CRANpkg("magrittr")` vignette if the syntax is unclear.
+
+# Introduction

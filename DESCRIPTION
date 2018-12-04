@@ -1,4 +1,4 @@
-Package: monti
+Package: SSML
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Author:
@@ -6,12 +6,19 @@ Author:
     Rebecca Panitch <rpanitch@bu.edu>,
     Lucas Schiffer <schifferl@bu.edu>
 Maintainer: Lucas Schiffer <schifferl@bu.edu>
-Description: What the package does (one paragraph).
+Description:
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis tempor massa
+    eu ipsum interdum, ut tincidunt mauris efficitur. Maecenas placerat pulvinar
+    egestas. Maecenas facilisis interdum aliquam. Phasellus sit amet pharetra
+    eros, vel ullamcorper sapien. Curabitur cursus orci justo, ultrices rhoncus
+    magna tincidunt eu. Mauris nec gravida orci. Nulla ac enim quam. Maecenas
+    eros risus, varius nec nisi ac, varius ultricies massa.
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 3.5.0)
+    R (>= 3.5.0),
+    SummarizedExperiment
 Imports:
     Biobase
 Suggests:
@@ -21,3 +28,4 @@ Suggests:
     rmarkdown,
     testthat
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr
