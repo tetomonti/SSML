@@ -41,7 +41,9 @@ examples of what a user might do with
 `r BiocStyle::Githubpkg("schifferl/SSML")`.
 
 ```{r}
+library(caret)
 library(SSML)
+library(SSL)
 ```
 
 Pipe operators from the `r BiocStyle::CRANpkg("magrittr")` package are used in
@@ -82,13 +84,40 @@ calculations. All output from machine learning methods we wrap will be
 standardized such that evaluation can be implimented as a general purpose
 method.
 
+# Helper Functions
+
+```{r}
+extract_colData <- function(x) {
+    SummarizedExperiment::colData(x) %>%
+        S4Vectors::as.data.frame() %>%
+        tibble::rownames_to_column()    
+}
+```
+
+```{r}
+extract_assay <- function(x) {
+    SummarizedExperiment::assay(x) %>%
+        base::t() %>%
+        S4Vectors::as.data.frame() %>%
+        tibble::rownames_to_column()   
+}
+```
+
+```{r}
+perpare_data <- function(x) {
+    base::list(extract_colData, extract_assay) %>%
+        purrr::invoke_map(x = x) %>%
+        purrr::reduce(base::merge.data.frame)
+}
+```
+
 # Provisioning
 
 The following method represents our current work on provisioning.
 
 ```{r}
-provision_sets <- function(x, ...) {
-    
+provision_sets <- function(x, together = NULL, ...) {
+    perpare_data(x)
 }
 ```
 
