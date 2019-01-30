@@ -1,13 +1,10 @@
 ---
 title: "SSML"
 author:
-- name: Ethel Nankya
+- name: Lucas Schiffer
   affiliation:
   - &1 Bioinformatics Graduate Program, Boston University, Boston, MA
 - name: Rebecca Panitch
-  affiliation:
-  - *1
-- name: Lucas Schiffer
   affiliation:
   - *1
 date: '`r format(Sys.Date(), "%B %e, %Y")`'
@@ -33,6 +30,7 @@ The following `r BiocStyle::CRANpkg("knitr")` options will be used in this
 vignette to provide the most useful and concise output.
 
 ```{r}
+knitr::opts_chunk$set(cache = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 ```
 
@@ -84,7 +82,17 @@ calculations. All output from machine learning methods we wrap will be
 standardized such that evaluation can be implimented as a general purpose
 method.
 
-# Helper Functions
+# Provisioning
+
+## Input Object Coercion
+
+A series of helper functions are necessary to extract the components of a
+`SummarizedExperiment` object and merge them into a `data.frame` object. The
+coercion is a prerequisite for most existing machine learning methods because
+the more traditional "wide" format is expected as input and
+`SummarizedExperiment` objects are a vastly different representation as compared
+`data.frame` objects (again, the expected input format). The three functions
+shown below are used for this purpose.
 
 ```{r}
 extract_colData <- function(x) {
@@ -104,20 +112,20 @@ extract_assay <- function(x) {
 ```
 
 ```{r}
-perpare_data <- function(x) {
+prepare_data <- function(x) {
     base::list(extract_colData, extract_assay) %>%
         purrr::invoke_map(x = x) %>%
         purrr::reduce(base::merge.data.frame)
 }
 ```
 
-# Provisioning
+## Training/Test Set Splitting
 
-The following method represents our current work on provisioning.
+The following method represents our current work on training/test set splitting.
 
 ```{r}
 provision_sets <- function(x, together = NULL, ...) {
-    perpare_data(x)
+    prepare_data(x)
 }
 ```
 
@@ -129,6 +137,16 @@ The following method represents our current work on wrapping random forest.
 
 ```{r}
 random_forest <- function(x, ...) {
+    
+}
+```
+
+## Support Vector Machine
+
+The following method represents our current work on wrapping random forest.
+
+```{r}
+support_vector_machine <- function(x, ...) {
     
 }
 ```
@@ -150,6 +168,14 @@ evaluate_performance <- function(x, ...) {
 ```{r}
 provision_sets(TCGA) %>%
     random_forest() %>%
+    evaluate_performance()
+```
+
+## Support Vector Machine
+
+```{r}
+provision_sets(TCGA) %>%
+    support_vector_machine() %>%
     evaluate_performance()
 ```
 

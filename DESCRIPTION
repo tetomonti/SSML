@@ -2,9 +2,9 @@ Package: SSML
 Title: Semi-Supervised Machine Learning Methods for Bioconductor
 Version: 0.0.0.9000
 Author:
-    Ethel Nankya <etnankya@bu.edu>,
+    Lucas Schiffer <schifferl@bu.edu>,
     Rebecca Panitch <rpanitch@bu.edu>,
-    Lucas Schiffer <schifferl@bu.edu>
+    Jimmy Kiely <jckiely@bu.edu>
 Maintainer: Lucas Schiffer <schifferl@bu.edu>
 Description:
     SSML aims to impliment semi-supervised machine learning methods for
