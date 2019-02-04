@@ -151,6 +151,17 @@ support_vector_machine <- function(x, ...) {
 }
 ```
 
+## Gradient Boosting
+
+The following method represents our current work on wrapping gradient boosting.
+
+```{r}
+gradient_boosting <- function(x, ...) {
+    
+}
+```
+
+
 # Evaluation
 
 The following method represents our current work on evaluation.
@@ -176,6 +187,14 @@ provision_sets(TCGA) %>%
 ```{r}
 provision_sets(TCGA) %>%
     support_vector_machine() %>%
+    evaluate_performance()
+```
+
+## Gradient Boosting
+
+```{r}
+provision_sets(TCGA) %>%
+    gradient_boosting() %>%
     evaluate_performance()
 ```
 
