@@ -22,8 +22,12 @@ Imports:
 Suggests:
     BiocCheck,
     BiocStyle,
+    curatedTCGAData,
     knitr,
+    MultiAssayExperiment,
     rmarkdown,
-    testthat
+    S4Vectors,
+    testthat,
+    usethis
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
