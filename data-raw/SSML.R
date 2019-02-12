@@ -57,7 +57,7 @@ provision_data <- function(x, column_name, percent_training, percent_labeled,
         base::sample(size_labeled_testing)
 
     data_training[-rows_labels_training, column_name] <- NA
-    data_testing[-rows_labels_testing, column_name] <- NA
+    # data_testing[-rows_labels_testing, column_name] <- NA
 
     list(data_training, data_testing)
 }
@@ -110,26 +110,26 @@ save_data <- function(x, set_id) {
     base::save(list = name_two, file = file_two, compress = TRUE)
 }
 
-TCGA <-
-    prepare_data(TCGA)
+BRCA <-
+    prepare_data(BRCA)
 
 LUM_A <-
-    dplyr::filter(TCGA, PAM50.mRNA == "Luminal A") %>%
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
     provision_data("PAM50.mRNA", 0.70, 1.00, 1001)
 
 LUM_B <-
-    dplyr::filter(TCGA, PAM50.mRNA == "Luminal B") %>%
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
     provision_data("PAM50.mRNA", 0.70, 1.00, 1001)
 
 join_data(LUM_A, LUM_B) %>%
     save_data("1A")
 
 LUM_A <-
-    dplyr::filter(TCGA, PAM50.mRNA == "Luminal A") %>%
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
     provision_data("PAM50.mRNA", 0.70, 0.25, 1001)
 
 LUM_B <-
-    dplyr::filter(TCGA, PAM50.mRNA == "Luminal B") %>%
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
     provision_data("PAM50.mRNA", 0.70, 0.25, 1001)
 
 join_data(LUM_A, LUM_B) %>%
