@@ -59,7 +59,7 @@ provision_data <- function(x, column_name, percent_training, percent_labeled,
     data_training[-rows_labels_training, column_name] <- NA
     # data_testing[-rows_labels_testing, column_name] <- NA
 
-    list(data_training, data_testing)
+    base::list(data_training, data_testing)
 }
 
 join_data <- function(x, y) {
@@ -81,7 +81,7 @@ join_data <- function(x, y) {
     data_testing <-
         dplyr::bind_rows(x_two, y_two)
 
-    list(data_training, data_testing)
+    base::list(data_training, data_testing)
 }
 
 save_data <- function(x, set_id) {
@@ -97,17 +97,26 @@ save_data <- function(x, set_id) {
     name_two <-
         base::paste0("testing_", set_id)
 
+    # file_one <-
+    #     base::paste0("./data/", name_one, ".rda")
+
+    # file_two <-
+    #     base::paste0("./data/", name_two, ".rda")
+
+    # base::assign(name_one, data_one)
+    # base::assign(name_two, data_two)
+
+    # base::save(list = name_one, file = file_one, compress = TRUE)
+    # base::save(list = name_two, file = file_two, compress = TRUE)
+
     file_one <-
-        base::paste0("./data/", name_one, ".rda")
+        base::paste0("./inst/extdata/", name_one, ".rds")
 
     file_two <-
-        base::paste0("./data/", name_two, ".rda")
+        base::paste0("./inst/extdata/", name_two, ".rds")
 
-    base::assign(name_one, data_one)
-    base::assign(name_two, data_two)
-
-    base::save(list = name_one, file = file_one, compress = TRUE)
-    base::save(list = name_two, file = file_two, compress = TRUE)
+    base::saveRDS(data_one, file_one, compress = TRUE)
+    base::saveRDS(data_two, file_two, compress = TRUE)
 }
 
 BRCA <-
@@ -126,6 +135,28 @@ join_data(LUM_A, LUM_B) %>%
 
 LUM_A <-
     dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 1001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 1001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("1B")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 1001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 1001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("1C")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
     provision_data("PAM50.mRNA", 0.70, 0.25, 1001)
 
 LUM_B <-
@@ -134,3 +165,135 @@ LUM_B <-
 
 join_data(LUM_A, LUM_B) %>%
     save_data("1D")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 2001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 2001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("2A")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 2001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 2001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("2B")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 2001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 2001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("2C")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 2001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 2001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("2D")
+#####
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 3001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 3001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("3A")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 3001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 3001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("3B")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 3001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 3001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("3C")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 3001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 3001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("3D")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 4001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 1.00, 4001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("4A")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 4001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.75, 4001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("4B")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 4001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.50, 4001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("4C")
+
+LUM_A <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal A") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 4001)
+
+LUM_B <-
+    dplyr::filter(BRCA, PAM50.mRNA == "Luminal B") %>%
+    provision_data("PAM50.mRNA", 0.70, 0.25, 4001)
+
+join_data(LUM_A, LUM_B) %>%
+    save_data("4D")
