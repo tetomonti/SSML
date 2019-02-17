@@ -1,58 +1,64 @@
+### Loading libraries
 library(Biobase)
 library(e1071)
 library(RSSL)
 library(pROC)
+library(dplyr)
 
-# Load data
-tcga <- readRDS(paste("/Users/JimmyKiely/Documents/Monti Lab/",
-                      "BRCA_2018_11_01_subtyped_DESeq2_log_eSet.rds", sep=""))
+# Loading in training and testing 1D data
+training <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1D.rds")
+testing <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1D.rds")
 
-# Take only pheno data
-ph <- phenoData(tcga)
-pheno <- ph[ph$pam50=="LumB" | ph$pam50=="LumA",]
+# Get labels and convert to binary -- Luminal A= 0 and Luminal B=1 
+train_ss_labels <- as.factor(as.numeric(training$PAM50.mRNA=="Luminal B"))
 
-# Create a binary variable for pam50 (0 = LumA, 1 = LumB)
-pheno$pam50_binary <- as.factor(as.numeric(pheno$pam50=="LumB"))
+# Get only expression data
+train_ss_exp <- training[,2686:ncol(training)]
 
-# Split data into 70% training, 30% test
-smp_size <- floor(0.70 * nrow(pheno))
-set.seed(123)
-train_tcga <- sample(seq_len(nrow(pheno)), size = smp_size)
+# Get top 5000 genes by median absolute deviation
+colmad <- apply(train_ss_exp, 2, mad)
+top5000 <- tail(sort(colmad),5000)
 
-# Split the phenotype data by test and training
-train_pheno <- pheno[train_tcga, ]
-test_pheno <- pheno[-train_tcga, ]
+# Subset top 5000 genes in training
+train_ss_exp_5000 <- train_ss_exp[,colnames(train_ss_exp) %in% names(top5000) ]
 
-# Split expression data by phenotype split
-train_exp <- t(exprs(tcga)[,rownames(train_pheno)])
-test_exp <- t(exprs(tcga)[,rownames(test_pheno)])
+# Subset top 5000 genes in testing
+test_exp <- testing[,2686:ncol(testing)]
+test_exp_5000 <- test_exp[,colnames(test_exp) %in% names(top5000) ]
+
+# Get labels and convert to binary -- Luminal A= 0 and Luminal B=1 
+test_labels <- as.factor(as.numeric(testing$PAM50.mRNA=="Luminal B"))
+
+# Remove all NA samples (fully labeled dataset)
+training_fl <- training[!is.na(training$PAM50.mRNA),]
+
+# Get only expression
+train_fl_exp <-  training_fl[,2686:ncol(training_fl)]
+
+# Get top 5000 genes
+train_fl_exp_5000 <- train_fl_exp[,colnames(train_fl_exp) %in% names(top5000) ]
+
+# Get lables in binary
+train_fl_labels <- as.factor(as.numeric(training_fl$PAM50.mRNA=="Luminal B"))
 
 # Supervised SVM with linear kernel ('svm')
-model <- svm(x=train_exp, y=train_pheno$pam50_binary, scale=F, kernel="linear")
-pred <- predict(model, newdata = test_exp)
+model_fl <- svm(x=train_fl_exp_5000, y=train_fl_labels, scale=T)
+pred_fl <- predict(model_fl, newdata = test_exp_5000)
 
-# ROC curve for supervised 'svm'
-roc <- roc(as.numeric(as.character(test_pheno$pam50_binary)), 
-           as.numeric(as.character(pred)))
-plot(smooth(roc, method='fitdistr'), main="ROC Plot for LumA vs LumB Supervised 'svm' TCGA")
-text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc)))
+# ROC curve
+roc_fl <- roc(as.numeric(as.character(test_labels)), 
+              as.numeric(as.character(pred_fl)))
+plot(smooth(roc_fl, method='fitdistr'), main="ROC Plot for LumA vs LumB Supervised 'svm' TCGA")
+text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc_fl)))
 
-# Indices for randomly unlabeled data, setting 25% unlabeled
-set.seed(123)
-max_ind <- length(train_exp[,1]) 
-percent_unlabeled <- 0.25
-random_ind <- sample(1:max_ind, floor(percent_unlabeled * max_ind))
-
-# Splitting data into labeled and unlabeled
-labeled <- train_exp[-random_ind,]
-labels <- train_pheno$pam50_binary[-random_ind]
-unlabeled <- train_exp[random_ind,]
+# Grabbing unlabeled expression 5000 data
+unlabeled_exp_5000 <- train_ss_exp_5000[which(is.na(train_ss_labels)),]
 
 # Semi-supervised SVM with linear kernel
-model_2 <- WellSVM(X=labeled, y=labels, X_u=unlabeled, x_center=F, gamma=0)
-pred_2 <- predict(model_2, newdata = test_exp)
+model_ss <- WellSVM(X=train_fl_exp_5000, y=train_fl_labels, X_u=unlabeled_exp_5000, scale=T, gamma=0)
+pred_ss <- predict(model_ss, newdata = test_exp_5000)
 
 # ROC curve for WellSVM
-roc_2 <- roc(as.numeric(as.character(test_pheno$pam50_binary)), as.numeric(as.character(pred_2)))
-plot(smooth(roc_2, method='fitdistr'), main="ROC Plot for LumA vs LumB Semi-Supervised 'WellSVM' TCGA")
-text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc_2)))
+roc_ss <- roc(as.numeric(as.character(test_labels)), as.numeric(as.character(pred_ss)))
+plot(smooth(roc_ss, method='fitdistr'), main="ROC Plot for LumA vs LumB Semi-Supervised 'WellSVM' TCGA")
+text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc_ss)))
