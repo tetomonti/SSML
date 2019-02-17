@@ -1,30 +1,28 @@
 library(SSML)
-library(SSL)
 
 data("training_1D")
 data("testing_1D")
 
 not_all_na <- function(x) {
-    is.na(x) %>%
-        all() %>%
-        isFALSE()
+    base::is.na(x) %>%
+        base::all() %>%
+        base::isFALSE()
 }
 
 not_zero_variance <- function(x) {
-    unique(x) %>%
-        length() %>%
+    base::unique(x) %>%
+        base::length() %>%
         magrittr::is_greater_than(1)
 }
 
 is_not_character <- function(x) {
-    is.character(x) %>%
-        isFALSE()
+    base::is.character(x) %>%
+        base::isFALSE()
 }
 
 is_not_na <- function(x) {
-
-    is.na(x) %>%
-        isFALSE()
+    base::is.na(x) %>%
+        base::isFALSE()
 }
 
 training_colnames <-
@@ -40,8 +38,11 @@ testing_colnames <-
 intersecting_colnames <-
     intersect(training_colnames, testing_colnames)
 
-training_1D <- training_1D[, intersecting_colnames]
-testing_1D <- testing_1D[, intersecting_colnames]
+training_1D <-
+    training_1D[, intersecting_colnames]
+
+testing_1D <-
+    testing_1D[, intersecting_colnames]
 
 training_1D <-
     dplyr::mutate(training_1D, gender = forcats::as_factor(gender)) %>%
@@ -54,23 +55,27 @@ testing_1D <-
     dplyr::select_if(is_not_character)
 
 xl <-
-    dplyr::filter(training_1D, !is.na(PAM50.mRNA)) %>%
+    dplyr::filter(training_1D, !base::is.na(PAM50.mRNA)) %>%
     dplyr::select(-PAM50.mRNA) %>%
-    dplyr::mutate(gender = as.integer(gender)) %>%
-    dplyr::select(735:739)
+    dplyr::mutate(gender = as.integer(gender))
 
 xu <-
-    dplyr::filter(training_1D, is.na(PAM50.mRNA)) %>%
+    dplyr::filter(training_1D, base::is.na(PAM50.mRNA)) %>%
     dplyr::select(-PAM50.mRNA) %>%
-    dplyr::mutate(gender = as.integer(gender)) %>%
-    dplyr::select(735:739)
+    dplyr::mutate(gender = base::as.integer(gender))
 
 yl <-
-    dplyr::filter(training_1D, !is.na(PAM50.mRNA)) %>%
+    dplyr::filter(training_1D, !base::is.na(PAM50.mRNA)) %>%
     magrittr::use_series(PAM50.mRNA) %>%
     base::as.integer()
 
-xl <- xl[1:70,1:4]
-xu <- xu[1:91,1:4]
-yl <- yl[1:70]
-l<-sslGmmEM(xl,yl,xu)
+ll <-
+    SSL::sslGmmEM(xl[1:72, 735:738], yl[1:72], xu[1:216, 735:738])
+
+labeled_data <- xl[1:72, 735:744]
+unlabeled_data <- xu[1:216, 735:744]
+labels_vector <- yl[1:72]
+
+save(labeled_data, file = "~/labeled_data.rda", compress = TRUE)
+save(unlabeled_data, file = "~/unlabeled_data.rda", compress = TRUE)
+save(labels_vector, file = "~/labels_vector.rda", compress = TRUE)

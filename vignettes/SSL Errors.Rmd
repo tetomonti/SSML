@@ -1,0 +1,123 @@
+---
+title: "SSL Errors"
+author:
+- name: Lucas Schiffer
+  affiliation:
+  - Bioinformatics Graduate Program, Boston University, Boston, MA
+date: '`r format(Sys.Date(), "%B %e, %Y")`'
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{CRAN SSL Errors}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r, echo=FALSE}
+library(SSML)
+```
+
+```{r, echo=FALSE}
+data("labeled_data")
+data("unlabeled_data")
+data("labels_vector")
+```
+
+# Introduction
+
+The `r BiocStyle::CRANpkg("SSL")` package features a Gaussian mixture model with
+expectation maximization classifier for semi-supervised learning. However the
+implimentation produces an error when more than four features are present. I
+have attempted to fix a number of the issues by modifying the source from CRAN
+but have been unsuccessful. I have made this small example to demonstrate the
+error.
+
+# Example Data
+
+## Labeled Data
+
+There is a `data.frame` of gene expression measurements with known labels that
+has the following dimensions.
+
+```{r}
+dim(labeled_data)
+```
+
+And the data itself looks like the following.
+
+```{r}
+labeled_data[1:12, 1:8]
+```
+
+## Unlabeled Data
+
+There is a `data.frame` of gene expression measurements with unknown labels that
+has the following dimensions.
+
+```{r}
+dim(unlabeled_data)
+```
+
+And the data itself looks like the following.
+
+```{r}
+unlabeled_data[1:12, 1:8]
+```
+
+## Labels Vector
+
+Finally, there is a vector of labels with the following length.
+
+```{r}
+length(labels_vector)
+```
+
+And the labels themselves looks like the following.
+
+```{r}
+labels_vector
+```
+
+# SSL Errors
+
+When run with just four features the `sslGmmEM` method from the
+`r BiocStyle::CRANpkg("SSL")` package will produce the following output.
+
+```{r}
+SSL::sslGmmEM(labeled_data[, 1:4], labels_vector, unlabeled_data[, 1:4])
+```
+
+However, when run with just one more feature, for a total of five features, the
+method produces an error.
+
+```{r}
+try(SSL::sslGmmEM(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5]))
+```
+
+As learning with four features is not useful this would need to be rectified to
+use the `r BiocStyle::CRANpkg("SSL")` package in production.
+
+## Additional Examples
+
+```{r}
+try(SSL::sslCoTrain(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5]))
+try(SSL::sslLDS(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5]))
+try(SSL::sslMarkovRandomWalks(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5]))
+try(SSL::sslLLGC(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5]))
+try(SSL::sslMincut(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5], k = 2))
+try(SSL::sslRegress(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5], alpha = 0.1))
+try(SSL::sslSelfTrain(labeled_data[, 1:5], labels_vector, unlabeled_data[, 1:5], nrounds = 10))
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
