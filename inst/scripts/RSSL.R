@@ -5,10 +5,19 @@ library(RSSL)
 library(pROC)
 library(dplyr)
 
-# Loading in training and testing 1D data
-training <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1D.rds")
-testing <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1D.rds")
+# Loading in training and testing data
+training_1A <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1A.rds")
+training_1B <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1B.rds")
+training_1C <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1C.rds")
+training_1D <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/training_1D.rds")
+testing_1A <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1A.rds")
+testing_1B <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1B.rds")
+testing_1C <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1C.rds")
+testing_1D <- readRDS("/Users/JimmyKiely/Documents/Monti Lab/Datasets/testing_1D.rds")
 
+# Function to create ROC plots of SVM results
+results <- function(training, testing) {
+    
 # Get labels and convert to binary -- Luminal A= 0 and Luminal B=1 
 train_ss_labels <- as.factor(as.numeric(training$PAM50.mRNA=="Luminal B"))
 
@@ -62,3 +71,17 @@ pred_ss <- predict(model_ss, newdata = test_exp_5000)
 roc_ss <- roc(as.numeric(as.character(test_labels)), as.numeric(as.character(pred_ss)))
 plot(smooth(roc_ss, method='fitdistr'), main="ROC Plot for LumA vs LumB Semi-Supervised 'WellSVM' TCGA")
 text(x=0.2, y=0.2, labels=paste("AUC:",auc(roc_ss)))
+}
+
+# Results for 1A
+results(training_1A, testing_1A)
+
+# Results for 1B
+results(training_1B, testing_1B)
+
+# Results for 1C
+results(training_1C, testing_1C)
+
+# Results for 1D
+results(training_1D, testing_1D)
+
