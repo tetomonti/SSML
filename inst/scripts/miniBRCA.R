@@ -79,8 +79,8 @@ for (i in n_unlabeled) {
 
         unlabeled_labels <-
             dplyr::slice(training_data, -i_labeled) %>%
-            magrittr::use_series(Subtype) %>%
-            magrittr::extract(i_unlabeled)
+            magrittr::extract(i_unlabeled) %>%
+            magrittr::use_series(Subtype)
 
         unlabeled_classes <-
             base::as.integer(unlabeled_labels)
