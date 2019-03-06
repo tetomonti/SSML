@@ -1,130 +1,196 @@
-library(ggplot2)
 library(magrittr)
 
 base::load("data/miniBRCA.rda")
 
-n_train <-
-  base::nrow(miniBRCA) %>%
-  magrittr::multiply_by(0.70) %>%
-  base::round()
+n_unlabeled <-
+    c(29, 58, 87, 116, 145, 174, 202)
 
-i_train <-
-  base::nrow(miniBRCA) %>%
-  base::sample(n_train)
+n_bootstrap <-
+    seq(100)
 
-training_data <-
-  dplyr::slice(miniBRCA, i_train)
+results <-
+    list()
 
-testing_data <-
-  dplyr::slice(miniBRCA, -i_train)
+for (i in n_unlabeled) {
+    j <-
+        match(i, n_unlabeled)
 
-n_labeled <-
-  base::nrow(training_data) %>%
-  magrittr::multiply_by(0.30) %>%
-  base::round()
+    training_auc <-
+        numeric()
 
-i_labeled <-
-  base::nrow(training_data) %>%
-  base::sample(n_labeled)
+    training_specificities <-
+        list()
 
-labeled_data <-
-  dplyr::slice(training_data, i_labeled) %>%
-  dplyr::select(-Subtype)
+    training_sensitivities <-
+        list()
 
-labeled_labels <-
-  dplyr::slice(training_data, i_labeled) %>%
-  magrittr::use_series(Subtype)
+    testing_auc <-
+        numeric()
 
-unlabeled_data <-
-  dplyr::slice(training_data, -i_labeled) %>%
-  dplyr::select(-Subtype)
+    testing_specificities <-
+        list()
 
-unlabeled_labels <-
-  dplyr::slice(training_data, -i_labeled) %>%
-  magrittr::use_series(Subtype)
+    testing_sensitivities <-
+        list()
 
-unlabeled_classes <-
-  base::as.integer(unlabeled_labels)
+    for (k in n_bootstrap) {
+        n_train <-
+            base::nrow(miniBRCA) %>%
+            magrittr::multiply_by(0.70) %>%
+            base::round()
 
-training_classifier <-
-  RSSL::GRFClassifier(X = labeled_data, y = labeled_labels,
-                      X_u = unlabeled_data)
+        i_train <-
+            base::nrow(miniBRCA) %>%
+            base::sample(n_train)
 
-training_probabilities <-
-  methods::slot(training_classifier, "responsibilities")
+        training_data <-
+            dplyr::slice(miniBRCA, i_train)
 
-training_seq <-
-  base::nrow(training_probabilities) %>%
-  base::seq()
+        testing_data <-
+            dplyr::slice(miniBRCA, -i_train)
 
-unlabeled_probabilities <-
-  magrittr::extract(training_probabilities, training_seq, 1)
+        n_labeled <-
+            base::nrow(training_data) %>%
+            magrittr::multiply_by(0.30) %>%
+            base::round()
 
-training_roc <-
-  pROC::roc(unlabeled_classes, unlabeled_probabilities)
+        i_labeled <-
+            base::nrow(training_data) %>%
+            base::sample(n_labeled)
 
-training_auc <-
-  pROC::auc(unlabeled_classes, unlabeled_probabilities) %>%
-  base::round(digits = 4) %>%
-  base::formatC(digits = 4, format = "f")
+        labeled_data <-
+            dplyr::slice(training_data, i_labeled) %>%
+            dplyr::select(-Subtype)
 
-training_text <-
-  base::paste("AUC =", training_auc)
+        labeled_labels <-
+            dplyr::slice(training_data, i_labeled) %>%
+            magrittr::use_series(Subtype)
 
-graphics::plot(training_roc, main = "Luminal A/B using Gaussian Random Fields")
-graphics::text(x = 0.2, y = 0.2, training_text)
+        i_unlabeled <-
+            dplyr::slice(training_data, -i_labeled) %>%
+            base::nrow() %>%
+            base::seq() %>%
+            base::sample(i)
 
-predicted_labels <-
-  RSSL::predict(training_classifier)
+        unlabeled_data <-
+            dplyr::slice(training_data, -i_labeled) %>%
+            dplyr::slice(i_unlabeled) %>%
+            dplyr::select(-Subtype)
 
-predicted_data <-
-  dplyr::slice(training_data, -i_labeled) %>%
-  dplyr::mutate(Subtype = predicted_labels)
+        unlabeled_labels <-
+            dplyr::slice(training_data, -i_labeled) %>%
+            magrittr::use_series(Subtype) %>%
+            magrittr::extract(i_unlabeled)
 
-joined_data <-
-  dplyr::slice(training_data, i_labeled) %>%
-  dplyr::bind_rows(predicted_data) %>%
-  dplyr::select(-Subtype)
+        unlabeled_classes <-
+            base::as.integer(unlabeled_labels)
 
-joined_labels <-
-  dplyr::slice(training_data, i_labeled) %>%
-  dplyr::bind_rows(predicted_data) %>%
-  magrittr::use_series(Subtype)
+        training_classifier <-
+            RSSL::GRFClassifier(X = labeled_data, y = labeled_labels,
+                                X_u = unlabeled_data)
 
-testing_data <-
-  dplyr::slice(miniBRCA, -i_train) %>%
-  dplyr::select(-Subtype)
+        training_probabilities <-
+            methods::slot(training_classifier, "responsibilities")
 
-testing_labels <-
-  dplyr::slice(miniBRCA, -i_train) %>%
-  magrittr::use_series(Subtype)
+        training_seq <-
+            base::nrow(training_probabilities) %>%
+            base::seq()
 
-testing_classes <-
-  base::as.integer(testing_labels)
+        unlabeled_probabilities <-
+            magrittr::extract(training_probabilities, training_seq, 1)
 
-testing_classifier <-
-  RSSL::GRFClassifier(X = joined_data, y = joined_labels, X_u = testing_data)
+        training_roc <-
+            pROC::roc(unlabeled_classes, unlabeled_probabilities)
 
-testing_probabilities <-
-  methods::slot(testing_classifier, "responsibilities")
+        training_auc[k] <-
+            pROC::auc(unlabeled_classes, unlabeled_probabilities) %>%
+            base::as.numeric()
 
-testing_seq <-
-  base::nrow(testing_probabilities) %>%
-  base::seq()
+        training_specificities[[k]] <-
+            magrittr::use_series(training_roc, specificities)
 
-testing_probabilities <-
-  magrittr::extract(testing_probabilities, testing_seq, 1)
+        training_sensitivities[[k]] <-
+            magrittr::use_series(training_roc, sensitivities)
 
-testing_roc <-
-  pROC::roc(testing_classes, testing_probabilities)
+        predicted_labels <-
+            RSSL::predict(training_classifier)
 
-testing_auc <-
-  pROC::auc(testing_classes, testing_probabilities) %>%
-  base::round(digits = 4) %>%
-  base::formatC(digits = 4, format = "f")
+        predicted_data <-
+            dplyr::slice(training_data, -i_labeled) %>%
+            dplyr::slice(i_unlabeled) %>%
+            dplyr::mutate(Subtype = predicted_labels)
 
-testing_text <-
-  base::paste("AUC =", testing_auc)
+        joined_data <-
+            dplyr::slice(training_data, i_labeled) %>%
+            dplyr::bind_rows(predicted_data) %>%
+            dplyr::select(-Subtype)
 
-graphics::plot(testing_roc, main = "Luminal A/B using Gaussian Random Fields")
-graphics::text(x = 0.2, y = 0.2, testing_text)
+        joined_labels <-
+            dplyr::slice(training_data, i_labeled) %>%
+            dplyr::bind_rows(predicted_data) %>%
+            magrittr::use_series(Subtype)
+
+        testing_data <-
+            dplyr::slice(miniBRCA, -i_train) %>%
+            dplyr::select(-Subtype)
+
+        testing_labels <-
+            dplyr::slice(miniBRCA, -i_train) %>%
+            magrittr::use_series(Subtype)
+
+        testing_classes <-
+            base::as.integer(testing_labels)
+
+        testing_classifier <-
+            RSSL::GRFClassifier(X = joined_data, y = joined_labels,
+                                X_u = testing_data)
+
+        testing_probabilities <-
+            methods::slot(testing_classifier, "responsibilities")
+
+        testing_seq <-
+            base::nrow(testing_probabilities) %>%
+            base::seq()
+
+        testing_probabilities <-
+            magrittr::extract(testing_probabilities, testing_seq, 1)
+
+        testing_roc <-
+            pROC::roc(testing_classes, testing_probabilities)
+
+        testing_auc[k] <-
+            pROC::auc(testing_classes, testing_probabilities) %>%
+            base::as.numeric()
+
+        testing_specificities[[k]] <-
+            magrittr::use_series(testing_roc, specificities)
+
+        testing_sensitivities[[k]] <-
+            magrittr::use_series(testing_roc, sensitivities)
+    }
+
+    training_specificities <-
+        purrr::reduce(training_specificities, base::cbind) %>%
+        base::apply(1, base::mean)
+
+    training_sensitivities <-
+        purrr::reduce(training_sensitivities, base::cbind) %>%
+        base::apply(1, base::mean)
+
+    testing_specificities <-
+        purrr::reduce(testing_specificities, base::cbind) %>%
+        base::apply(1, base::mean)
+
+    testing_sensitivities <-
+        purrr::reduce(testing_sensitivities, base::cbind) %>%
+        base::apply(1, base::mean)
+
+    results[[j]] <-
+        base::list(training_auc = training_auc,
+                   training_specificities = training_specificities,
+                   training_sensitivities = training_sensitivities,
+                   testing_auc = testing_auc,
+                   testing_specificities = testing_specificities,
+                   testing_sensitivities = testing_sensitivities)
+
+}
