@@ -195,7 +195,7 @@ for (i in n_unlabeled) {
 
 }
 
-base::saveRDS(results, file = "inst/extdata/GRFClassifier_miniBRCA.rds")
+base::saveRDS(results, file = "inst/extdata/GRFClassifierBRCA.rds")
 
 partitions <-
     base::c("30L+10", "30L+20", "30L+30", "30L+40", "30L+50", "30L+60",
