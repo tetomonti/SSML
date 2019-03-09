@@ -3,7 +3,7 @@ library(magrittr)
 base::load("data/miniHNSC.rda")
 
 n_unlabeled <-
-    base::c(29, 58, 87, 116, 145, 174, 202)
+    base::c(34, 69, 103, 138, 172, 207, 241)
 
 n_bootstrap <-
     base::seq(100)
@@ -195,7 +195,7 @@ for (i in n_unlabeled) {
 
 }
 
-base::saveRDS(results, file = "inst/extdata/GRFClassifier_miniHNSC.rds")
+base::saveRDS(results, file = "inst/extdata/GRFClassifierHNSC.rds")
 
 partitions <-
     base::c("30L+10", "30L+20", "30L+30", "30L+40", "30L+50", "30L+60",
