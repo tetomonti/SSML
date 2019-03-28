@@ -16,5 +16,8 @@ ggplot2::ggplot(BRCA, ggplot2::aes(X, Y, shape = Subtype, color = Subtype)) +
     ggplot2::geom_point() +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = "bottom") +
-    ggplot2::labs(title = "BRCA TSNE", subtitle = "Top 5K Features by MAD",
+    ggplot2::labs(title = "BRCA tSNE", subtitle = "Top 5K Features by MAD",
                   x = NULL, y = NULL)
+
+ggplot2::ggsave("inst/extdata/BRCAtSNE.png", plot = ggplot2::last_plot(),
+                device = "png", width = 5, height = 5)
