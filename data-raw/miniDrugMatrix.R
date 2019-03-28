@@ -51,7 +51,7 @@ top_features <-
 
 miniDrugMatrix <-
     dplyr::select(DrugMatrix, Carcinogen_liv, top_features) %>%
-    dplyr::rename(Carcinogenicity = Carcinogen_liv) %>%
-    dplyr::mutate(Carcinogenicity = forcats::as_factor(Carcinogenicity))
+    dplyr::rename(Carcinogenic = Carcinogen_liv) %>%
+    dplyr::mutate(Carcinogenic = forcats::as_factor(Carcinogenic))
 
 usethis::use_data(miniDrugMatrix)
