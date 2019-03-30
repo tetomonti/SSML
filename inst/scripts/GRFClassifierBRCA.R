@@ -3,7 +3,7 @@ library(magrittr)
 base::load("data/miniBRCA.rda")
 
 n_unlabeled <-
-    base::c(29, 58, 87, 116, 145, 174, 202)
+    base::c(25, 51, 76, 101, 126, 152, 177)
 
 n_bootstrap <-
     base::seq(100)

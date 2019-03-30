@@ -3,7 +3,7 @@ library(magrittr)
 base::load("data/miniHNSC.rda")
 
 n_unlabeled <-
-    base::c(34, 69, 103, 138, 172, 207, 241)
+    base::c(32, 63, 95, 126, 158, 189, 221)
 
 n_bootstrap <-
     base::seq(100)
