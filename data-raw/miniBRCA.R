@@ -63,6 +63,8 @@ BRCA <-
   dplyr::filter(PAM50.mRNA != "Basal-like") %>%
   dplyr::filter(PAM50.mRNA != "HER2-enriched") %>%
   dplyr::filter(PAM50.mRNA != "Normal-like") %>%
+  dplyr::filter(stringr::str_detect(rowname, "11A", negate = TRUE)) %>%
+  dplyr::filter(stringr::str_detect(rowname, "11B", negate = TRUE)) %>%
   tibble::column_to_rownames() %>%
   dplyr::select(2674, 2685:23185) %>%
   dplyr::select_if(not_all_na) %>%
