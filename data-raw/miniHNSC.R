@@ -68,6 +68,7 @@ HNSC <-
         pathologic_stage == "stage ivb" ~ "High",
         pathologic_stage == "stage ivc" ~ "High"
     )) %>%
+    dplyr::filter(stringr::str_detect(rowname, "11A", negate = TRUE)) %>%
     tibble::column_to_rownames() %>%
     dplyr::select(7, 1445:21946) %>%
     dplyr::select_if(not_all_na) %>%
