@@ -6,7 +6,7 @@ n_unlabeled <-
     base::c(7, 15, 22, 29, 36, 44, 51)
 
 n_bootstrap <-
-    base::seq(1)
+    base::seq(100)
 
 results <-
     base::list()
@@ -203,7 +203,7 @@ for (i in n_unlabeled) {
 
 }
 
-base::saveRDS(results, file = "inst/extdata/GRFClassifierHNSC.rds")
+base::saveRDS(results, file = "inst/extdata/GRFClassifierDrugMatrix.rds")
 
 partitions <-
     base::c("30L+10", "30L+20", "30L+30", "30L+40", "30L+50", "30L+60",
