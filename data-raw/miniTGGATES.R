@@ -36,7 +36,7 @@ not_zero_variance <- function(x) {
 TGGATES <-
     prepare_data(TGGATES) %>%
     tibble::column_to_rownames() %>%
-    dplyr::select(23, 29:11272) %>%
+    dplyr::select(27, 29:11272) %>%
     dplyr::select_if(not_all_na) %>%
     dplyr::select_if(not_zero_variance)
 
@@ -49,8 +49,8 @@ top_features <-
     magrittr::extract(1:5000)
 
 miniTGGATES <-
-    dplyr::select(TGGATES, Liver.Cancer, top_features) %>%
-    dplyr::rename(Carcinogenic = Liver.Cancer) %>%
+    dplyr::select(TGGATES, Liver.Cancer.Independent, top_features) %>%
+    dplyr::rename(Carcinogenic = Liver.Cancer.Independent) %>%
     dplyr::mutate(Carcinogenic = forcats::as_factor(Carcinogenic))
 
 usethis::use_data(miniTGGATES)
