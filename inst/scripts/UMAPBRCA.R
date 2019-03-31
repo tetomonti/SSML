@@ -20,4 +20,4 @@ ggplot2::ggplot(BRCA, ggplot2::aes(X, Y, shape = Subtype, color = Subtype)) +
                   x = NULL, y = NULL)
 
 ggplot2::ggsave("inst/extdata/BRCAUMAP.png", plot = ggplot2::last_plot(),
-                device = "png", width = 5, height = 5)
+                device = "png", width = 7, height = 7)

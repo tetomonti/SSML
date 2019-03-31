@@ -20,4 +20,4 @@ ggplot2::ggplot(HNSC, ggplot2::aes(X, Y, shape = Grade, color = Grade)) +
                   x = NULL, y = NULL)
 
 ggplot2::ggsave("inst/extdata/HNSCtSNE.png", plot = ggplot2::last_plot(),
-                device = "png", width = 5, height = 5)
+                device = "png", width = 7, height = 7)

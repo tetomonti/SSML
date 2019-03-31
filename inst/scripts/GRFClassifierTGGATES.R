@@ -1,161 +1,164 @@
 library(magrittr)
 
-base::load("data/miniTGGATES.rda")
-
-n_unlabeled <-
-    base::c(8, 15, 23, 30, 38, 45, 53)
-
-n_bootstrap <-
-    base::seq(100)
-
+# base::load("data/miniTGGATES.rda")
+#
+# n_unlabeled <-
+#     base::c(8, 15, 23, 30, 38, 45, 53)
+#
+# n_bootstrap <-
+#     base::seq(100)
+#
+# results <-
+#     base::list()
+#
+# for (i in n_unlabeled) {
+#     j <-
+#         base::match(i, n_unlabeled)
+#
+#     testing_auc <-
+#         base::numeric()
+#
+#     testing_specificities <-
+#         base::list()
+#
+#     testing_sensitivities <-
+#         base::list()
+#
+#     for (k in n_bootstrap) {
+#         n_test <-
+#             base::nrow(miniTGGATES) %>%
+#             magrittr::multiply_by(0.30) %>%
+#             base::round()
+#
+#         i_test <-
+#             magrittr::use_series(miniTGGATES, Carcinogenic) %>%
+#             base::is.na() %>%
+#             magrittr::not() %>%
+#             base::which() %>%
+#             base::sample(n_test)
+#
+#         l_train <-
+#             base::nrow(miniTGGATES) %>%
+#             base::seq() %>%
+#             magrittr::is_in(i_test) %>%
+#             magrittr::not()
+#
+#         i_train <-
+#             base::nrow(miniTGGATES) %>%
+#             base::seq() %>%
+#             magrittr::extract(l_train)
+#
+#         training_data <-
+#             dplyr::slice(miniTGGATES, i_train)
+#
+#         testing_data <-
+#             dplyr::slice(miniTGGATES, -i_train)
+#
+#         i_labeled <-
+#             magrittr::use_series(training_data, Carcinogenic) %>%
+#             base::is.na() %>%
+#             magrittr::not() %>%
+#             base::which()
+#
+#         labeled_data <-
+#             dplyr::slice(training_data, i_labeled) %>%
+#             dplyr::select(-Carcinogenic)
+#
+#         labeled_labels <-
+#             dplyr::slice(training_data, i_labeled) %>%
+#             magrittr::use_series(Carcinogenic)
+#
+#         i_unlabeled <-
+#             dplyr::slice(training_data, -i_labeled) %>%
+#             base::nrow() %>%
+#             base::seq() %>%
+#             base::sample(i)
+#
+#         unlabeled_data <-
+#             dplyr::slice(training_data, -i_labeled) %>%
+#             dplyr::slice(i_unlabeled) %>%
+#             dplyr::select(-Carcinogenic)
+#
+#         training_classifier <-
+#             RSSL::GRFClassifier(X = labeled_data, y = labeled_labels,
+#                                 X_u = unlabeled_data)
+#
+#         predicted_labels <-
+#             RSSL::predict(training_classifier)
+#
+#         predicted_data <-
+#             dplyr::slice(training_data, -i_labeled) %>%
+#             dplyr::slice(i_unlabeled) %>%
+#             dplyr::mutate(Carcinogenic = predicted_labels)
+#
+#         joined_data <-
+#             dplyr::slice(training_data, i_labeled) %>%
+#             dplyr::bind_rows(predicted_data) %>%
+#             dplyr::select(-Carcinogenic)
+#
+#         joined_labels <-
+#             dplyr::slice(training_data, i_labeled) %>%
+#             dplyr::bind_rows(predicted_data) %>%
+#             magrittr::use_series(Carcinogenic)
+#
+#         testing_data <-
+#             dplyr::slice(miniTGGATES, -i_train) %>%
+#             dplyr::select(-Carcinogenic)
+#
+#         testing_labels <-
+#             dplyr::slice(miniTGGATES, -i_train) %>%
+#             magrittr::use_series(Carcinogenic)
+#
+#         testing_classes <-
+#             base::as.integer(testing_labels)
+#
+#         testing_classifier <-
+#             RSSL::GRFClassifier(X = joined_data, y = joined_labels,
+#                                 X_u = testing_data)
+#
+#         testing_probabilities <-
+#             methods::slot(testing_classifier, "responsibilities")
+#
+#         testing_seq <-
+#             base::nrow(testing_probabilities) %>%
+#             base::seq()
+#
+#         testing_probabilities <-
+#             magrittr::extract(testing_probabilities, testing_seq, 1)
+#
+#         testing_roc <-
+#             pROC::roc(testing_classes, testing_probabilities)
+#
+#         testing_auc[k] <-
+#             pROC::auc(testing_classes, testing_probabilities) %>%
+#             base::as.numeric()
+#
+#         testing_specificities[[k]] <-
+#             magrittr::use_series(testing_roc, specificities)
+#
+#         testing_sensitivities[[k]] <-
+#             magrittr::use_series(testing_roc, sensitivities)
+#     }
+#
+#     testing_specificities <-
+#         purrr::reduce(testing_specificities, base::cbind) %>%
+#         base::apply(1, base::mean)
+#
+#     testing_sensitivities <-
+#         purrr::reduce(testing_sensitivities, base::cbind) %>%
+#         base::apply(1, base::mean)
+#
+#     results[[j]] <-
+#         base::list(testing_auc = testing_auc,
+#                    testing_specificities = testing_specificities,
+#                    testing_sensitivities = testing_sensitivities)
+#
+# }
+#
+# base::saveRDS(results, file = "inst/extdata/GRFClassifierTGGATES.rds")
+#
 results <-
-    base::list()
-
-for (i in n_unlabeled) {
-    j <-
-        base::match(i, n_unlabeled)
-
-    testing_auc <-
-        base::numeric()
-
-    testing_specificities <-
-        base::list()
-
-    testing_sensitivities <-
-        base::list()
-
-    for (k in n_bootstrap) {
-        n_test <-
-            base::nrow(miniTGGATES) %>%
-            magrittr::multiply_by(0.30) %>%
-            base::round()
-
-        i_test <-
-            magrittr::use_series(miniTGGATES, Carcinogenic) %>%
-            base::is.na() %>%
-            magrittr::not() %>%
-            base::which() %>%
-            base::sample(n_test)
-
-        l_train <-
-            base::nrow(miniTGGATES) %>%
-            base::seq() %>%
-            magrittr::is_in(i_test) %>%
-            magrittr::not()
-
-        i_train <-
-            base::nrow(miniTGGATES) %>%
-            base::seq() %>%
-            magrittr::extract(l_train)
-
-        training_data <-
-            dplyr::slice(miniTGGATES, i_train)
-
-        testing_data <-
-            dplyr::slice(miniTGGATES, -i_train)
-
-        i_labeled <-
-            magrittr::use_series(training_data, Carcinogenic) %>%
-            base::is.na() %>%
-            magrittr::not() %>%
-            base::which()
-
-        labeled_data <-
-            dplyr::slice(training_data, i_labeled) %>%
-            dplyr::select(-Carcinogenic)
-
-        labeled_labels <-
-            dplyr::slice(training_data, i_labeled) %>%
-            magrittr::use_series(Carcinogenic)
-
-        i_unlabeled <-
-            dplyr::slice(training_data, -i_labeled) %>%
-            base::nrow() %>%
-            base::seq() %>%
-            base::sample(i)
-
-        unlabeled_data <-
-            dplyr::slice(training_data, -i_labeled) %>%
-            dplyr::slice(i_unlabeled) %>%
-            dplyr::select(-Carcinogenic)
-
-        training_classifier <-
-            RSSL::GRFClassifier(X = labeled_data, y = labeled_labels,
-                                X_u = unlabeled_data)
-
-        predicted_labels <-
-            RSSL::predict(training_classifier)
-
-        predicted_data <-
-            dplyr::slice(training_data, -i_labeled) %>%
-            dplyr::slice(i_unlabeled) %>%
-            dplyr::mutate(Carcinogenic = predicted_labels)
-
-        joined_data <-
-            dplyr::slice(training_data, i_labeled) %>%
-            dplyr::bind_rows(predicted_data) %>%
-            dplyr::select(-Carcinogenic)
-
-        joined_labels <-
-            dplyr::slice(training_data, i_labeled) %>%
-            dplyr::bind_rows(predicted_data) %>%
-            magrittr::use_series(Carcinogenic)
-
-        testing_data <-
-            dplyr::slice(miniTGGATES, -i_train) %>%
-            dplyr::select(-Carcinogenic)
-
-        testing_labels <-
-            dplyr::slice(miniTGGATES, -i_train) %>%
-            magrittr::use_series(Carcinogenic)
-
-        testing_classes <-
-            base::as.integer(testing_labels)
-
-        testing_classifier <-
-            RSSL::GRFClassifier(X = joined_data, y = joined_labels,
-                                X_u = testing_data)
-
-        testing_probabilities <-
-            methods::slot(testing_classifier, "responsibilities")
-
-        testing_seq <-
-            base::nrow(testing_probabilities) %>%
-            base::seq()
-
-        testing_probabilities <-
-            magrittr::extract(testing_probabilities, testing_seq, 1)
-
-        testing_roc <-
-            pROC::roc(testing_classes, testing_probabilities)
-
-        testing_auc[k] <-
-            pROC::auc(testing_classes, testing_probabilities) %>%
-            base::as.numeric()
-
-        testing_specificities[[k]] <-
-            magrittr::use_series(testing_roc, specificities)
-
-        testing_sensitivities[[k]] <-
-            magrittr::use_series(testing_roc, sensitivities)
-    }
-
-    testing_specificities <-
-        purrr::reduce(testing_specificities, base::cbind) %>%
-        base::apply(1, base::mean)
-
-    testing_sensitivities <-
-        purrr::reduce(testing_sensitivities, base::cbind) %>%
-        base::apply(1, base::mean)
-
-    results[[j]] <-
-        base::list(testing_auc = testing_auc,
-                   testing_specificities = testing_specificities,
-                   testing_sensitivities = testing_sensitivities)
-
-}
-
-base::saveRDS(results, file = "inst/extdata/GRFClassifierTGGATES.rds")
+    base::readRDS(file = "inst/extdata/GRFClassifierTGGATES.rds")
 
 partitions <-
     base::c("30L+10", "30L+20", "30L+30", "30L+40", "30L+50", "30L+60",
@@ -207,6 +210,9 @@ dplyr::filter(auc_results, set == "Testing") %>%
         x = NULL, y = "AUC"
     )
 
+ggplot2::ggsave("inst/extdata/TGGATESGRF.png", plot = ggplot2::last_plot(),
+                device = "png", width = 7, height = 7)
+
 roc_results <-
     base::data.frame()
 
@@ -251,3 +257,6 @@ dplyr::filter(roc_results, set == "Testing") %>%
         x = "Specificity", y = "Sensitivity", color = NULL
     ) +
     ggplot2::scale_color_discrete(guide = ggplot2::guide_legend(nrow = 1))
+
+ggplot2::ggsave("inst/extdata/TGGATESROC.png", plot = ggplot2::last_plot(),
+                device = "png", width = 7, height = 7)

@@ -22,4 +22,4 @@ ggplot2::ggplot(TGGATES, ggplot2::aes(X, Y, shape = Carcinogenic,
                   subtitle = "Top 5K Features by MAD", x = NULL, y = NULL)
 
 ggplot2::ggsave("inst/extdata/TGGATEStSNE.png", plot = ggplot2::last_plot(),
-                device = "png", width = 5, height = 5)
+                device = "png", width = 7, height = 7)
