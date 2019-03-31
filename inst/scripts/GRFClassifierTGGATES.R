@@ -3,7 +3,7 @@ library(magrittr)
 base::load("data/miniTGGATES.rda")
 
 n_unlabeled <-
-    base::c(13, 26, 39, 53, 66, 79, 92)
+    base::c(8, 15, 23, 30, 38, 45, 53)
 
 n_bootstrap <-
     base::seq(100)
