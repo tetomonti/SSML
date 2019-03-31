@@ -15,15 +15,6 @@ for (i in n_unlabeled) {
     j <-
         base::match(i, n_unlabeled)
 
-    # training_auc <-
-    #     base::numeric()
-
-    # training_specificities <-
-    #     base::list()
-
-    # training_sensitivities <-
-    #     base::list()
-
     testing_auc <-
         base::numeric()
 
@@ -88,40 +79,9 @@ for (i in n_unlabeled) {
             dplyr::slice(i_unlabeled) %>%
             dplyr::select(-Carcinogenic)
 
-        # unlabeled_labels <-
-        #     dplyr::slice(training_data, -i_labeled) %>%
-        #     dplyr::slice(i_unlabeled) %>%
-        #     magrittr::use_series(Carcinogenic)
-
-        # unlabeled_classes <-
-        #     base::as.integer(unlabeled_labels)
-
         training_classifier <-
             RSSL::GRFClassifier(X = labeled_data, y = labeled_labels,
                                 X_u = unlabeled_data)
-
-        # training_probabilities <-
-        #     methods::slot(training_classifier, "responsibilities")
-
-        # training_seq <-
-        #     base::nrow(training_probabilities) %>%
-        #     base::seq()
-
-        # unlabeled_probabilities <-
-        #     magrittr::extract(training_probabilities, training_seq, 1)
-
-        # training_roc <-
-        #     pROC::roc(unlabeled_classes, unlabeled_probabilities)
-
-        # training_auc[k] <-
-        #     pROC::auc(unlabeled_classes, unlabeled_probabilities) %>%
-        #     base::as.numeric()
-
-        # training_specificities[[k]] <-
-        #     magrittr::use_series(training_roc, specificities)
-
-        # training_sensitivities[[k]] <-
-        #     magrittr::use_series(training_roc, sensitivities)
 
         predicted_labels <-
             RSSL::predict(training_classifier)
@@ -180,14 +140,6 @@ for (i in n_unlabeled) {
             magrittr::use_series(testing_roc, sensitivities)
     }
 
-    # training_specificities <-
-    #     purrr::reduce(training_specificities, base::cbind) %>%
-    #     base::apply(1, base::mean)
-
-    # training_sensitivities <-
-    #     purrr::reduce(training_sensitivities, base::cbind) %>%
-    #     base::apply(1, base::mean)
-
     testing_specificities <-
         purrr::reduce(testing_specificities, base::cbind) %>%
         base::apply(1, base::mean)
@@ -213,19 +165,6 @@ auc_results <-
     base::data.frame()
 
 for (i in 1:7) {
-    # auc <-
-    #     magrittr::extract2(results, i) %>%
-    #     magrittr::use_series(training_auc)
-
-    # partition <-
-    #     magrittr::extract(partitions, i)
-
-    # set <-
-    #     base::as.character("Training")
-
-    # training_results <-
-    #     base::data.frame(auc, partition, set)
-
     auc <-
         magrittr::extract2(results, i) %>%
         magrittr::use_series(testing_auc)
@@ -244,19 +183,6 @@ for (i in 1:7) {
 
 }
 
-# dplyr::filter(auc_results, set == "Training") %>%
-#     dplyr::group_by(partition) %>%
-#     dplyr::summarize(
-#         `Min.` = base::min(auc),
-#         `1st Qu.` = stats::quantile(auc, 0.25),
-#         Median = stats::median(auc),
-#         Mean = base::mean(auc),
-#         `3rd Qu.` = stats::quantile(auc, 0.75),
-#         Max = base::max(auc)
-#     ) %>%
-#     dplyr::rename(Partition = partition) %>%
-#     knitr::kable(digits = 3)
-
 dplyr::filter(auc_results, set == "Testing") %>%
     dplyr::group_by(partition) %>%
     dplyr::summarize(
@@ -269,17 +195,6 @@ dplyr::filter(auc_results, set == "Testing") %>%
     ) %>%
     dplyr::rename(Partition = partition) %>%
     knitr::kable(digits = 3)
-
-# dplyr::filter(auc_results, set == "Training") %>%
-#     ggplot2::ggplot(ggplot2::aes(x = partition, y = auc)) +
-#     ggplot2::stat_boxplot(geom = "errorbar") +
-#     ggplot2::geom_boxplot(notch = TRUE) +
-#     ggplot2::theme_linedraw() +
-#     ggplot2::labs(
-#         title = "Label Propagation using Gaussian Random Fields",
-#         subtitle = "Training, Top 5K Features by MAD, 100 Bootstrap Samples",
-#         x = NULL, y = "AUC"
-#     )
 
 dplyr::filter(auc_results, set == "Testing") %>%
     ggplot2::ggplot(ggplot2::aes(x = partition, y = auc)) +
@@ -296,28 +211,6 @@ roc_results <-
     base::data.frame()
 
 for (i in 1:7) {
-    # specificity <-
-    #     magrittr::extract2(results, i) %>%
-    #     magrittr::use_series(training_specificities) %>%
-    #     base::sort(decreasing = TRUE)
-
-    # sensitivity <-
-    #     magrittr::extract2(results, i) %>%
-    #     magrittr::use_series(training_sensitivities) %>%
-    #     base::sort(decreasing = FALSE)
-
-    # partition <-
-    #     magrittr::extract(partitions, i)
-
-    # set <-
-    #     base::as.character("Training")
-
-    # training_results <-
-    #     base::data.frame(specificity, sensitivity, partition, set) %>%
-    #     dplyr::add_row(specificity = 1, sensitivity = 0, partition = partition,
-    #                    set = set) %>%
-    #     dplyr::arrange(sensitivity)
-
     specificity <-
         magrittr::extract2(results, i) %>%
         magrittr::use_series(testing_specificities) %>%
@@ -344,20 +237,6 @@ for (i in 1:7) {
         base::rbind(roc_results, testing_results)
 
 }
-
-# dplyr::filter(roc_results, set == "Training") %>%
-#     ggplot2::ggplot(ggplot2::aes(specificity, sensitivity, color = partition)) +
-#     ggplot2::geom_step() +
-#     ggplot2::scale_x_reverse() +
-#     ggplot2::geom_abline(intercept = 1) +
-#     ggplot2::theme_linedraw() +
-#     ggplot2::theme(legend.position = "bottom") +
-#     ggplot2::labs(
-#         title = "Label propagation using Gaussian Random Fields",
-#         subtitle = "Training, Top 5K Features by MAD, 100 Bootstrap Samples",
-#         x = "Specificity", y = "Sensitivity", color = NULL
-#     ) +
-#     ggplot2::scale_color_discrete(guide = ggplot2::guide_legend(nrow = 1))
 
 dplyr::filter(roc_results, set == "Testing") %>%
     ggplot2::ggplot(ggplot2::aes(specificity, sensitivity, color = partition)) +
